@@ -1,0 +1,65 @@
+plugins {
+    id 'java'
+    id 'org.springframework.boot' version '3.3.5'
+    id 'io.spring.dependency-management' version '1.1.6'
+    id 'org.barfuin.gradle.jacocolog' version '3.1.0'
+}
+
+group = 'com.cosmocats'
+version = '0.0.1-SNAPSHOT'
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(17)
+    }
+}
+
+configurations {
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+ext {
+    minimumCoveragePerFile = 0.5
+    filesExcludedFromCoverage = [
+            "**/*CosmoCatsApplication.*",
+            "**/exceptions/**",
+            "**/domain/**",
+            "**/dto/**",
+            "**/mapper/**"
+    ]
+}
+
+apply from: file("${rootProject.projectDir}/gradle/test.gradle")
+apply from: file("${rootProject.projectDir}/gradle/jacoco.gradle")
+
+dependencies {
+
+    compileOnly "org.projectlombok:lombok:1.18.28"
+    annotationProcessor "org.projectlombok:lombok:1.18.28"
+    implementation 'org.mapstruct:mapstruct:1.5.5.Final'
+    annotationProcessor 'org.mapstruct:mapstruct-processor:1.5.5.Final'
+
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+    implementation 'org.springframework.boot:spring-boot-starter'
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+
+    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.1.0'
+
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.9.3'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.9.3'
+
+    testImplementation "org.wiremock:wiremock-jetty12:3.9.2"
+
+}
+
+tasks.named('test') {
+    useJUnitPlatform()
+}
